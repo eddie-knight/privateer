@@ -26,6 +26,7 @@ permissions: {}
 jobs:
   publish:
     permissions:
+      security-events: write
       contents: read   # the plugin reads this repository
       id-token: write  # hub bearer (trusted publishing) and Sigstore keyless signing
     uses: revanite-io/pvtr-publish-results/.github/workflows/publish.yml@v1.0.0-rc
@@ -35,6 +36,7 @@ jobs:
       license: CC0-1.0
       hub: ${{ inputs.hub }}
       dry-run: ${{ inputs.dry-run }}
+      upload-sarif: true
     secrets:
       config: |
         services:
