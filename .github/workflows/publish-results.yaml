@@ -1,0 +1,49 @@
+---
+# Scan this repository with the openssf/github-repo pvtr plugin and publish
+# the EvaluationLog to a grc.store hub, via the revanite-io/pvtr-publish-results
+# reusable workflow. The workflow registers and verifies the target
+# (eddie-knight/privateer) itself; the only prerequisite on the hub is that
+# this repository is bound as a CI publisher for the eddie-knight namespace.
+#
+# Preview trusts the workflow at @v1.0.0-rc; production will trust @v1 once
+# it exists, so the `uses:` ref must move with the hub you point it at.
+name: Publish OSPS Baseline results
+
+on:
+  workflow_dispatch:
+    inputs:
+      hub:
+        description: "Hub to publish to. https://hub.preview.grc.store trusts @v1.0.0-rc; https://hub.grc.store will trust @v1."
+        type: string
+        default: https://hub.preview.grc.store
+      dry-run:
+        description: Run everything but the publish (bundles are uploaded as an artifact instead).
+        type: boolean
+        default: false
+
+permissions: {}
+
+jobs:
+  publish:
+    permissions:
+      contents: read   # the plugin reads this repository
+      id-token: write  # hub bearer (trusted publishing) and Sigstore keyless signing
+    uses: revanite-io/pvtr-publish-results/.github/workflows/publish.yml@v1.0.0-rc
+    with:
+      # <namespace>/<id>@<version>: the target is this repo at the scanned commit.
+      target: eddie-knight/privateer@${{ github.sha }}
+      license: CC0-1.0
+      hub: ${{ inputs.hub }}
+      dry-run: ${{ inputs.dry-run }}
+    secrets:
+      config: |
+        services:
+          privateer:
+            plugin: openssf/github-repo
+            policy:
+              catalogs: [osps-baseline]
+              applicability: [maturity-1]
+            vars:
+              owner: eddie-knight
+              repo: privateer
+              token: ${{ secrets.GITHUB_TOKEN }}
