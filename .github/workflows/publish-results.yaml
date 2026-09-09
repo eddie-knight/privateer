@@ -31,7 +31,7 @@ jobs:
     uses: revanite-io/pvtr-publish-results/.github/workflows/publish.yml@v1.0.0-rc
     with:
       # <namespace>/<id>@<version>: the target is this repo at the scanned commit.
-      target: eddie-knight/privateer@${{ github.sha }}
+      target: eknight/privateer@${{ github.sha }}
       license: CC0-1.0
       hub: ${{ inputs.hub }}
       dry-run: ${{ inputs.dry-run }}
